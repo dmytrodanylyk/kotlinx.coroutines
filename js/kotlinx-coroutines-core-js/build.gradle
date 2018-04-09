@@ -2,3 +2,7 @@
 apply from: rootProject.file('gradle/node-js.gradle')
 apply from: rootProject.file('gradle/test-mocha-js.gradle')
 apply from: rootProject.file('gradle/publish-npm-js.gradle')
+
+dependencies {
+    compile "org.jetbrains.kotlinx:atomicfu-js:$atomicFU_version"
+}

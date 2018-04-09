@@ -16,17 +16,17 @@
 
 package kotlinx.coroutines.experimental
 
-private var counter = 0
+import kotlin.coroutines.experimental.*
 
-internal actual val Any.hexAddress: String
-    get() {
-        var result = this.asDynamic().__debug_counter
-        if (jsTypeOf(result) !== "number") {
-            result = ++counter
-            this.asDynamic().__debug_counter = result
+@Suppress("EXPECTED_DECLARATION_WITH_DEFAULT_PARAMETER")
+public expect fun newCoroutineContext(context: CoroutineContext, parent: Job? = null): CoroutineContext
 
-        }
-        return (result as Int).toString()
-    }
+@Suppress("PropertyName")
+public expect val DefaultDispatcher: CoroutineDispatcher
 
-internal actual val Any.classSimpleName: String get() = this::class.simpleName ?: "Unknown"
+@Suppress("PropertyName")
+internal expect val DefaultDelay: Delay
+
+internal expect inline fun <T> withCoroutineContext(context: CoroutineContext, block: () -> T): T
+internal expect fun Continuation<*>.toDebugString(): String
+internal expect val CoroutineContext.coroutineName: String?

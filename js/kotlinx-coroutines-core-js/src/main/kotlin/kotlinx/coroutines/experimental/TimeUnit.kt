@@ -16,17 +16,16 @@
 
 package kotlinx.coroutines.experimental
 
-private var counter = 0
+public actual enum class TimeUnit {
+    MILLISECONDS,
+    SECONDS;
 
-internal actual val Any.hexAddress: String
-    get() {
-        var result = this.asDynamic().__debug_counter
-        if (jsTypeOf(result) !== "number") {
-            result = ++counter
-            this.asDynamic().__debug_counter = result
-
+    public actual fun toMillis(time: Long): Long = when(this) {
+        MILLISECONDS -> time
+        SECONDS -> when {
+            time >= Long.MAX_VALUE / 1000L -> Long.MAX_VALUE
+            time <= Long.MIN_VALUE / 1000L -> Long.MIN_VALUE
+            else -> time * 1000L
         }
-        return (result as Int).toString()
     }
-
-internal actual val Any.classSimpleName: String get() = this::class.simpleName ?: "Unknown"
+}

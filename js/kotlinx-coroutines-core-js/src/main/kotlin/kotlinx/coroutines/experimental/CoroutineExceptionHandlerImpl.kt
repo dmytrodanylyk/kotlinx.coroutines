@@ -16,17 +16,9 @@
 
 package kotlinx.coroutines.experimental
 
-private var counter = 0
+import kotlin.coroutines.experimental.*
 
-internal actual val Any.hexAddress: String
-    get() {
-        var result = this.asDynamic().__debug_counter
-        if (jsTypeOf(result) !== "number") {
-            result = ++counter
-            this.asDynamic().__debug_counter = result
-
-        }
-        return (result as Int).toString()
-    }
-
-internal actual val Any.classSimpleName: String get() = this::class.simpleName ?: "Unknown"
+internal actual fun handleCoroutineExceptionImpl(context: CoroutineContext, exception: Throwable) {
+    // log exception
+    console.error(exception)
+}

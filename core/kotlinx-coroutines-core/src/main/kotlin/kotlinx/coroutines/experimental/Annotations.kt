@@ -16,17 +16,14 @@
 
 package kotlinx.coroutines.experimental
 
-private var counter = 0
+@Suppress("ACTUAL_WITHOUT_EXPECT")
+internal actual typealias JvmName = kotlin.jvm.JvmName
 
-internal actual val Any.hexAddress: String
-    get() {
-        var result = this.asDynamic().__debug_counter
-        if (jsTypeOf(result) !== "number") {
-            result = ++counter
-            this.asDynamic().__debug_counter = result
+@Suppress("ACTUAL_WITHOUT_EXPECT")
+internal actual typealias JvmMultifileClass = kotlin.jvm.JvmMultifileClass
 
-        }
-        return (result as Int).toString()
-    }
+@Suppress("ACTUAL_WITHOUT_EXPECT")
+internal actual typealias JvmField = kotlin.jvm.JvmField
 
-internal actual val Any.classSimpleName: String get() = this::class.simpleName ?: "Unknown"
+@Suppress("ACTUAL_WITHOUT_EXPECT")
+internal actual typealias Volatile = kotlin.jvm.Volatile

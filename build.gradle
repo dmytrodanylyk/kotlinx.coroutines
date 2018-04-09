@@ -1,7 +1,10 @@
 allprojects {
-    group = 'org.jetbrains.kotlinx'
     def deployVersion = properties['DeployVersion']
     if (deployVersion != null) version = deployVersion
+
+    repositories {
+        mavenLocal()
+    }
 }
 
 buildscript {
@@ -12,6 +15,7 @@ buildscript {
         }
     }
     repositories {
+        mavenLocal()
         jcenter()
         maven { url "http://kotlin.bintray.com/kotlinx" }
         maven { url "http://kotlin.bintray.com/kotlin-dev" }

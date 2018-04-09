@@ -53,31 +53,8 @@ public actual class JobCancellationException public actual constructor(
         (message!!.hashCode() * 31 + job.hashCode()) * 31 + (cause?.hashCode() ?: 0)
 }
 
-/**
- * This exception is thrown by [withTimeout] to indicate timeout.
- */
-@Suppress("DEPRECATION")
-public actual class TimeoutCancellationException internal constructor(
-    message: String,
-    @JvmField internal val coroutine: Job?
-) : TimeoutException(message) {
-    /**
-     * Creates timeout exception with a given message.
-     */
-    public actual constructor(message: String) : this(message, null)
-}
-
-@Suppress("FunctionName")
-internal fun TimeoutCancellationException(
-    time: Long,
-    unit: TimeUnit,
-    coroutine: Job
-) : TimeoutCancellationException = TimeoutCancellationException("Timed out waiting for $time $unit", coroutine)
-
-/**
- * @suppress **Deprecated**: Renamed to TimeoutCancellationException
- */
-@Deprecated("Renamed to TimeoutCancellationException", replaceWith = ReplaceWith("TimeoutCancellationException"))
-public open class TimeoutException(message: String) : CancellationException(message)
-
 internal actual class DispatchException actual constructor(message: String, cause: Throwable) : RuntimeException(message, cause)
+
+@Suppress("NOTHING_TO_INLINE")
+internal actual inline fun Throwable.addSuppressedThrowable(other: Throwable) =
+    addSuppressed(other)

@@ -16,17 +16,16 @@
 
 package kotlinx.coroutines.experimental
 
-private var counter = 0
+import java.util.*
+import kotlin.coroutines.experimental.AbstractCoroutineContextElement
+import kotlin.coroutines.experimental.CoroutineContext
 
-internal actual val Any.hexAddress: String
-    get() {
-        var result = this.asDynamic().__debug_counter
-        if (jsTypeOf(result) !== "number") {
-            result = ++counter
-            this.asDynamic().__debug_counter = result
-
-        }
-        return (result as Int).toString()
+internal actual fun handleCoroutineExceptionImpl(context: CoroutineContext, exception: Throwable) {
+    // use additional extension handlers
+    ServiceLoader.load(CoroutineExceptionHandler::class.java).forEach { handler ->
+        handler.handleException(context, exception)
     }
-
-internal actual val Any.classSimpleName: String get() = this::class.simpleName ?: "Unknown"
+    // use thread's handler
+    val currentThread = Thread.currentThread()
+    currentThread.uncaughtExceptionHandler.uncaughtException(currentThread, exception)
+}

@@ -16,17 +16,12 @@
 
 package kotlinx.coroutines.experimental
 
-private var counter = 0
+@Target(AnnotationTarget.FILE)
+internal actual annotation class JvmName(actual val name: String)
 
-internal actual val Any.hexAddress: String
-    get() {
-        var result = this.asDynamic().__debug_counter
-        if (jsTypeOf(result) !== "number") {
-            result = ++counter
-            this.asDynamic().__debug_counter = result
+@Target(AnnotationTarget.FILE)
+internal actual annotation class JvmMultifileClass
 
-        }
-        return (result as Int).toString()
-    }
+internal actual annotation class JvmField
 
-internal actual val Any.classSimpleName: String get() = this::class.simpleName ?: "Unknown"
+internal actual annotation class Volatile

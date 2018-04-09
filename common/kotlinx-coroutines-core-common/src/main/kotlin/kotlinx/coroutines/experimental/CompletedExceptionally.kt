@@ -27,7 +27,7 @@ package kotlinx.coroutines.experimental
  * @suppress **This is unstable API and it is subject to change.**
  */
 public open class CompletedExceptionally protected constructor(
-    public val cause: Throwable?,
+    @JvmField public val cause: Throwable?,
     allowNullCause: Boolean
 ) {
     /**

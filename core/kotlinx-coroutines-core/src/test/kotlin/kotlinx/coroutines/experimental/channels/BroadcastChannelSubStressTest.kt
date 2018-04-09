@@ -20,7 +20,6 @@ import kotlinx.coroutines.experimental.*
 import org.junit.*
 import org.junit.runner.*
 import org.junit.runners.*
-import java.util.concurrent.*
 import java.util.concurrent.atomic.*
 import kotlin.coroutines.experimental.*
 

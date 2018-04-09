@@ -16,17 +16,17 @@
 
 package kotlinx.coroutines.experimental
 
-private var counter = 0
+import kotlinx.coroutines.experimental.internal.*
 
-internal actual val Any.hexAddress: String
-    get() {
-        var result = this.asDynamic().__debug_counter
-        if (jsTypeOf(result) !== "number") {
-            result = ++counter
-            this.asDynamic().__debug_counter = result
+internal expect abstract class JobNode<out J : Job>(
+    job: J
+) : LockFreeLinkedListNode, DisposableHandle, Incomplete {
+    val job: J
+    val asHandler: CompletionHandler
+    override val isActive: Boolean
+    override val list: NodeList?
+    override fun dispose()
+    abstract fun invoke(reason: Throwable?)
+}
 
-        }
-        return (result as Int).toString()
-    }
-
-internal actual val Any.classSimpleName: String get() = this::class.simpleName ?: "Unknown"
+internal expect val CompletionHandler.asJobNode: JobNode<*>?

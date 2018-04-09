@@ -16,17 +16,18 @@
 
 package kotlinx.coroutines.experimental
 
-private var counter = 0
+public expect class CompletionHandlerException(message: String, cause: Throwable) : RuntimeException
 
-internal actual val Any.hexAddress: String
-    get() {
-        var result = this.asDynamic().__debug_counter
-        if (jsTypeOf(result) !== "number") {
-            result = ++counter
-            this.asDynamic().__debug_counter = result
+public expect open class CancellationException(message: String) : IllegalStateException
 
-        }
-        return (result as Int).toString()
-    }
+public expect class JobCancellationException(
+    message: String,
+    cause: Throwable?,
+    job: Job
+) : CancellationException {
+    val job: Job
+}
 
-internal actual val Any.classSimpleName: String get() = this::class.simpleName ?: "Unknown"
+internal expect class DispatchException(message: String, cause: Throwable) : RuntimeException
+
+internal expect fun Throwable.addSuppressedThrowable(other: Throwable)
