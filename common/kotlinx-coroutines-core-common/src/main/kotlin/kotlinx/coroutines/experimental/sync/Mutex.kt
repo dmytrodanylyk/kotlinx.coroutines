@@ -16,16 +16,12 @@
 
 package kotlinx.coroutines.experimental.sync
 
-import kotlinx.atomicfu.atomic
-import kotlinx.atomicfu.loop
+import kotlinx.atomicfu.*
 import kotlinx.coroutines.experimental.*
 import kotlinx.coroutines.experimental.internal.*
-import kotlinx.coroutines.experimental.intrinsics.startCoroutineUndispatched
-import kotlinx.coroutines.experimental.selects.ALREADY_SELECTED
-import kotlinx.coroutines.experimental.selects.SelectClause2
-import kotlinx.coroutines.experimental.selects.SelectInstance
-import kotlinx.coroutines.experimental.selects.select
-import kotlin.coroutines.experimental.startCoroutine
+import kotlinx.coroutines.experimental.intrinsics.*
+import kotlinx.coroutines.experimental.selects.*
+import kotlin.coroutines.experimental.*
 
 /**
  * Mutual exclusion for coroutines.
@@ -35,19 +31,6 @@ import kotlin.coroutines.experimental.startCoroutine
  * the lock still suspends the invoker.
  */
 public interface Mutex {
-    /**
-     * Factory for [Mutex] instances.
-     * @suppress **Deprecated**
-     */
-    public companion object Factory {
-        /**
-         * Creates new [Mutex] instance.
-         * @suppress **Deprecated**
-         */
-        @Deprecated("Replaced with top-level function", level = DeprecationLevel.HIDDEN)
-        public operator fun invoke(locked: Boolean = false): Mutex = Mutex(locked)
-    }
-
     /**
      * Returns `true` when this mutex is locked.
      */
@@ -113,7 +96,9 @@ public interface Mutex {
  *
  * @param locked initial state of the mutex.
  */
-public fun Mutex(locked: Boolean = false): Mutex = MutexImpl(locked)
+@Suppress("FunctionName")
+public fun Mutex(locked: Boolean = false): Mutex =
+    MutexImpl(locked)
 
 /**
  * Executes the given [action] under this mutex's lock.
@@ -122,7 +107,7 @@ public fun Mutex(locked: Boolean = false): Mutex = MutexImpl(locked)
  *
  * @return the return value of the action.
  */
-public inline suspend fun <T> Mutex.withLock(owner: Any? = null, action: () -> T): T {
+public suspend inline fun <T> Mutex.withLock(owner: Any? = null, action: () -> T): T {
     lock(owner)
     try {
         return action()
@@ -200,7 +185,9 @@ internal class MutexImpl(locked: Boolean) : Mutex, SelectClause2<Any?, Mutex> {
             when (state) {
                 is Empty -> {
                     if (state.locked !== UNLOCKED) return false
-                    val update = if (owner == null) EmptyLocked else Empty(owner)
+                    val update = if (owner == null) EmptyLocked else Empty(
+                        owner
+                    )
                     if (_state.compareAndSet(state, update)) return true
                 }
                 is LockedQueue -> {

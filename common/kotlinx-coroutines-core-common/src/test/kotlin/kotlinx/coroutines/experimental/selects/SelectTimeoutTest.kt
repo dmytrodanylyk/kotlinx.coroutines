@@ -14,16 +14,30 @@
  * limitations under the License.
  */
 
-package kotlinx.coroutines.experimental
+package kotlinx.coroutines.experimental.selects
 
+import kotlinx.coroutines.experimental.*
 import kotlin.test.*
 
-class JobTest : TestBase() {
+class SelectTimeoutTest : TestBase() {
     @Test
-    fun testMemoryRelease() {
-        val job = Job()
-        val n = 10_000_000 * stressTestMultiplier
-        var fireCount = 0
-        for (i in 0 until n) job.invokeOnCompletion { fireCount++ }.dispose()
+    fun testBasic() = runTest {
+        expect(1)
+        val result = select<String> {
+            onTimeout(1000) {
+                expectUnreached()
+                "FAIL"
+            }
+            onTimeout(100) {
+                expect(2)
+                "OK"
+            }
+            onTimeout(500) {
+                expectUnreached()
+                "FAIL"
+            }
+        }
+        assertEquals("OK", result)
+        finish(3)
     }
 }

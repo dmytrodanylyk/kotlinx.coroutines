@@ -19,7 +19,7 @@ package kotlinx.coroutines.experimental
 import kotlin.coroutines.experimental.*
 import kotlin.test.*
 
-class AsyncTest : TestBase() {
+class AsyncJvmTest : TestBase() {
     // This must be a common test but it fails on JS because of KT-21961
     @Test
     fun testAsyncWithFinally() = runTest {

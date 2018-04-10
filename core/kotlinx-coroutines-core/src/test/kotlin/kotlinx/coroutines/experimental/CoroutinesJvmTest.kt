@@ -19,7 +19,7 @@ package kotlinx.coroutines.experimental
 import kotlin.coroutines.experimental.*
 import kotlin.test.*
 
-class CoroutinesTest : TestBase() {
+class CoroutinesJvmTest : TestBase() {
     @Test
     fun testNotCancellableCodeWithExceptionCancelled() = runTest {
         expect(1)

@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
+@file:Suppress("NAMED_ARGUMENTS_NOT_ALLOWED") // KT-21913
+
 package kotlinx.coroutines.experimental.selects
 
 import kotlinx.coroutines.experimental.*
-import org.junit.*
-import org.junit.Assert.*
 import kotlin.coroutines.experimental.*
+import kotlin.test.*
 
 class SelectDeferredTest : TestBase() {
     @Test
-    fun testSimpleReturnsImmediately() = runBlocking<Unit> {
+    fun testSimpleReturnsImmediately() = runTest {
         expect(1)
-        val d1 = async<Int>(coroutineContext) {
+        val d1 = async(coroutineContext) {
             expect(3)
             42
         }
@@ -43,9 +44,9 @@ class SelectDeferredTest : TestBase() {
     }
 
     @Test
-    fun testSimpleWithYield() = runBlocking<Unit> {
+    fun testSimpleWithYield() = runTest {
         expect(1)
-        val d1 = async<Int>(coroutineContext) {
+        val d1 = async(coroutineContext) {
             expect(3)
             42
         }
@@ -69,7 +70,7 @@ class SelectDeferredTest : TestBase() {
     }
 
     @Test
-    fun testSelectIncompleteLazy() = runBlocking<Unit> {
+    fun testSelectIncompleteLazy() = runTest {
         expect(1)
         val d1 = async(coroutineContext, CoroutineStart.LAZY) {
             expect(5)
@@ -97,9 +98,9 @@ class SelectDeferredTest : TestBase() {
     }
 
     @Test
-    fun testSelectTwo() = runBlocking<Unit> {
+    fun testSelectTwo() = runTest {
         expect(1)
-        val d1 = async<String>(coroutineContext) {
+        val d1 = async(coroutineContext) {
             expect(3)
             yield() // to the other deffered
             expect(5)
@@ -107,7 +108,7 @@ class SelectDeferredTest : TestBase() {
             expect(7)
             "d1"
         }
-        val d2 = async<String>(coroutineContext) {
+        val d2 = async(coroutineContext) {
             expect(4)
             "d2" // returns result
         }

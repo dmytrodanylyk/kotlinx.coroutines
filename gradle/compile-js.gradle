@@ -8,6 +8,11 @@ tasks.withType(compileKotlin2Js.getClass()) {
         moduleKind = "umd"
         sourceMap = true
         metaInfo = true
+    }
+}
+
+compileKotlin2Js {
+    kotlinOptions {
         // drop -js suffix from outputFile
         def baseName = project.name - "-js"
         outputFile = new File(outputFile.parent, baseName + ".js")

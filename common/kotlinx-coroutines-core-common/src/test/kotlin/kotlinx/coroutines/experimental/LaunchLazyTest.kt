@@ -19,7 +19,7 @@ package kotlinx.coroutines.experimental
 import kotlin.coroutines.experimental.*
 import kotlin.test.*
 
-class CommonLaunchLazyTest : TestBase() {
+class LaunchLazyTest : TestBase() {
     @Test
     fun testLaunchAndYieldJoin() = runTest {
         expect(1)

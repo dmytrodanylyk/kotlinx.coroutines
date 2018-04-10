@@ -18,13 +18,14 @@ package kotlinx.coroutines.experimental.internal
 
 private typealias Node = LinkedListNode
 
-/** @suppress **This is unstable API and it is subject to change.**/
+/** @suppress **This is unstable API and it is subject to change.** */
+@Suppress("NO_ACTUAL_CLASS_MEMBER_FOR_EXPECTED_CLASS") // :TODO: Remove when fixed: https://youtrack.jetbrains.com/issue/KT-23703
 public actual typealias LockFreeLinkedListNode = LinkedListNode
 
-/** @suppress **This is unstable API and it is subject to change.**/
+/** @suppress **This is unstable API and it is subject to change.** */
 public actual typealias LockFreeLinkedListHead = LinkedListHead
 
-/** @suppress **This is unstable API and it is subject to change.**/
+/** @suppress **This is unstable API and it is subject to change.** */
 public open class LinkedListNode {
     @PublishedApi internal var _next = this
     @PublishedApi internal var _prev = this
@@ -98,7 +99,26 @@ public open class LinkedListNode {
     }
 }
 
-/** @suppress **This is unstable API and it is subject to change.**/
+/** @suppress **This is unstable API and it is subject to change.** */
+public actual open class AddLastDesc<T : Node> actual constructor(
+    actual val queue: Node,
+    actual val node: T
+) : AbstractAtomicDesc() {
+    protected override val affectedNode: Node get() = queue._prev
+    protected actual override fun onPrepare(affected: Node, next: Node): Any? = null
+    protected override fun onComplete() = queue.addLast(node)
+}
+
+/** @suppress **This is unstable API and it is subject to change.** */
+public actual abstract class AbstractAtomicDesc : AtomicDesc() {
+    protected abstract val affectedNode: Node
+    protected actual abstract fun onPrepare(affected: Node, next: Node): Any?
+    protected abstract fun onComplete()
+    actual final override fun prepare(op: AtomicOp<*>): Any? = onPrepare(affectedNode, affectedNode._next)
+    actual final override fun complete(op: AtomicOp<*>, failure: Any?) = onComplete()
+}
+
+/** @suppress **This is unstable API and it is subject to change.** */
 public open class LinkedListHead : LinkedListNode() {
     public val isEmpty get() = _next === this
 

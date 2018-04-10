@@ -16,11 +16,9 @@
 
 package kotlinx.coroutines.experimental.selects
 
-import org.junit.Test
-import kotlin.coroutines.experimental.Continuation
-import kotlin.coroutines.experimental.CoroutineContext
-import kotlin.coroutines.experimental.EmptyCoroutineContext
-import kotlin.coroutines.experimental.intrinsics.COROUTINE_SUSPENDED
+import kotlin.coroutines.experimental.*
+import kotlin.coroutines.experimental.intrinsics.*
+import kotlin.test.*
 
 class SelectBuilderImplTest {
     @Test
@@ -34,7 +32,7 @@ class SelectBuilderImplTest {
             }
             override fun resumeWithException(exception: Throwable) { error("Should not happen") }
         }
-        val c = SelectBuilderImpl<String>(delegate)
+        val c = SelectBuilderImpl(delegate)
         // still running builder
         check(!c.isSelected)
         check(c.trySelect("SELECT"))
@@ -60,7 +58,7 @@ class SelectBuilderImplTest {
             }
             override fun resumeWithException(exception: Throwable) { error("Should not happen") }
         }
-        val c = SelectBuilderImpl<String>(delegate)
+        val c = SelectBuilderImpl(delegate)
         check(c.getResult() === COROUTINE_SUSPENDED) // suspend first
         check(!c.isSelected)
         check(c.trySelect("SELECT"))
@@ -86,7 +84,7 @@ class SelectBuilderImplTest {
                 resumed = true
             }
         }
-        val c = SelectBuilderImpl<String>(delegate)
+        val c = SelectBuilderImpl(delegate)
         // still running builder
         check(!c.isSelected)
         check(c.trySelect("SELECT"))
@@ -117,7 +115,7 @@ class SelectBuilderImplTest {
                 resumed = true
             }
         }
-        val c = SelectBuilderImpl<String>(delegate)
+        val c = SelectBuilderImpl(delegate)
         check(c.getResult() === COROUTINE_SUSPENDED) // suspend first
         check(!c.isSelected)
         check(c.trySelect("SELECT"))

@@ -18,62 +18,16 @@ package kotlinx.coroutines.experimental.selects
 
 import kotlinx.coroutines.experimental.*
 import kotlinx.coroutines.experimental.sync.*
-import org.junit.*
-import org.junit.Assert.*
-import kotlin.coroutines.experimental.*
+import kotlin.test.*
 
-class SelectMutexTest : TestBase() {
-    @Test
-    fun testSelectLock() = runTest {
-        val mutex = Mutex()
-        expect(1)
-        launch(coroutineContext) { // ensure that it is not scheduled earlier than needed
-            finish(4) // after main exits
-        }
-        val res = select<String> {
-            mutex.onLock {
-                assertTrue(mutex.isLocked)
-                expect(2)
-                "OK"
-            }
-        }
-        assertEquals("OK", res)
-        expect(3)
-        // will wait for the first coroutine
-    }
-
-    @Test
-    fun testSelectLockWait() = runTest {
-        val mutex = Mutex(true) // locked
-        expect(1)
-        launch(coroutineContext) {
-            expect(3)
-            val res = select<String> { // will suspended
-                mutex.onLock {
-                    assertTrue(mutex.isLocked)
-                    expect(6)
-                    "OK"
-                }
-            }
-            assertEquals("OK", res)
-            expect(7)
-        }
-        expect(2)
-        yield() // to launched coroutine
-        expect(4)
-        mutex.unlock()
-        expect(5)
-        yield() // to resumed select
-        finish(8)
-    }
-
+class SelectMutexStressTest : TestBase() {
     @Test
     fun testSelectCancelledResourceRelease() = runTest {
         val n = 1_000 * stressTestMultiplier
         val mutex = Mutex(true) as MutexImpl // locked
         expect(1)
         repeat(n) { i ->
-            val job = launch(coroutineContext) {
+            val job = launch(kotlin.coroutines.experimental.coroutineContext) {
                 expect(i + 2)
                 select<Unit> {
                     mutex.onLock {

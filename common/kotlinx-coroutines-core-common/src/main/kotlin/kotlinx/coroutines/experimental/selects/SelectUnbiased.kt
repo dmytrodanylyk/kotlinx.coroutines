@@ -16,10 +16,9 @@
 
 package kotlinx.coroutines.experimental.selects
 
-import java.util.*
-import java.util.concurrent.TimeUnit
-import kotlin.coroutines.experimental.Continuation
-import kotlin.coroutines.experimental.intrinsics.suspendCoroutineOrReturn
+import kotlinx.coroutines.experimental.*
+import kotlin.coroutines.experimental.*
+import kotlin.coroutines.experimental.intrinsics.*
 
 /**
  * Waits for the result of multiple suspending functions simultaneously like [select], but in an _unbiased_
@@ -31,7 +30,7 @@ import kotlin.coroutines.experimental.intrinsics.suspendCoroutineOrReturn
  *
  * See [select] function description for all the other details.
  */
-public inline suspend fun <R> selectUnbiased(crossinline builder: SelectBuilder<R>.() -> Unit): R =
+public suspend inline fun <R> selectUnbiased(crossinline builder: SelectBuilder<R>.() -> Unit): R =
     suspendCoroutineOrReturn { cont ->
         val scope = UnbiasedSelectBuilderImpl(cont)
         try {
@@ -44,7 +43,8 @@ public inline suspend fun <R> selectUnbiased(crossinline builder: SelectBuilder<
 
 
 @PublishedApi
-internal class UnbiasedSelectBuilderImpl<in R>(cont: Continuation<R>) : SelectBuilder<R> {
+internal class UnbiasedSelectBuilderImpl<in R>(cont: Continuation<R>) :
+    SelectBuilder<R> {
     val instance = SelectBuilderImpl(cont)
     val clauses = arrayListOf<() -> Unit>()
 
@@ -55,7 +55,7 @@ internal class UnbiasedSelectBuilderImpl<in R>(cont: Continuation<R>) : SelectBu
     internal fun initSelectResult(): Any? {
         if (!instance.isSelected) {
             try {
-                Collections.shuffle(clauses)
+                clauses.shuffle()
                 clauses.forEach { it.invoke() }
             } catch (e: Throwable) {
                 instance.handleBuilderException(e)

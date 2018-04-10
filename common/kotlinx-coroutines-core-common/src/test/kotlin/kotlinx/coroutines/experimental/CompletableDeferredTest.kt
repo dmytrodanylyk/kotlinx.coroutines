@@ -21,7 +21,7 @@ package kotlinx.coroutines.experimental
 import kotlin.coroutines.experimental.*
 import kotlin.test.*
 
-class CommonCompletableDeferredTest : TestBase() {
+class CompletableDeferredTest : TestBase() {
     @Test
     fun testFresh() {
         val c = CompletableDeferred<String>()

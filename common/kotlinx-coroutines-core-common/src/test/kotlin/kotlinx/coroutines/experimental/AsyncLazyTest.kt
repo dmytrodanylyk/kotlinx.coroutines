@@ -21,7 +21,7 @@ package kotlinx.coroutines.experimental
 import kotlin.coroutines.experimental.*
 import kotlin.test.*
 
-class CommonAsyncLazyTest : TestBase() {
+class AsyncLazyTest : TestBase() {
     @Test
     fun testSimple() = runTest {
         expect(1)

@@ -22,7 +22,7 @@ package kotlinx.coroutines.experimental
 import kotlin.coroutines.experimental.*
 import kotlin.test.*
 
-class CommonWithContextTest : TestBase() {
+class WithContextTest : TestBase() {
     @Test
     fun testSameContextNoSuspend() = runTest {
         expect(1)

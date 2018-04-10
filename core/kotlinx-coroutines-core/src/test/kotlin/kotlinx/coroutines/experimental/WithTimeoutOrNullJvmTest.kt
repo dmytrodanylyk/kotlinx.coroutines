@@ -18,55 +18,7 @@ package kotlinx.coroutines.experimental
 
 import kotlin.test.*
 
-class WithTimeoutOrNullTest : TestBase() {
-    @Test
-    fun testNullOnTimeout() = runTest {
-        expect(1)
-        val result = withTimeoutOrNull(100) {
-            expect(2)
-            delay(1000)
-            expectUnreached()
-            "OK"
-        }
-        assertEquals(null, result)
-        finish(3)
-    }
-
-    @Test
-    fun testSuppressExceptionWithResult() = runTest {
-        expect(1)
-        val result = withTimeoutOrNull(100) {
-            expect(2)
-            try {
-                delay(1000)
-            } catch (e: CancellationException) {
-                expect(3)
-            }
-            "OK"
-        }
-        assertEquals(null, result)
-        finish(4)
-    }
-
-    @Test
-    fun testSuppressExceptionWithAnotherException() = runTest(
-        expected = { it is TestException }
-    ) {
-        expect(1)
-        val result = withTimeoutOrNull(100) {
-            expect(2)
-            try {
-                delay(1000)
-            } catch (e: CancellationException) {
-                finish(3)
-                throw TestException()
-            }
-            expectUnreached()
-            "OK"
-        }
-        expectUnreached()
-    }
-
+class WithTimeoutOrNullJvmTest : TestBase() {
     @Test
     fun testOuterTimeoutFiredBeforeInner() = runTest {
         val result = withTimeoutOrNull(100) {
@@ -81,6 +33,4 @@ class WithTimeoutOrNullTest : TestBase() {
         // outer timeout results in null
         assertEquals(null, result)
     }
-
-    private class TestException : Exception()
 }

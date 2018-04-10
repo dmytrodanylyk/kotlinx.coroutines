@@ -16,26 +16,14 @@
 
 package kotlinx.coroutines.experimental
 
-import kotlin.coroutines.experimental.*
 import kotlin.test.*
 
-class CommonCoroutineExceptionHandlerTest : TestBase() {
+class JobStressTest : TestBase() {
     @Test
-    fun testCoroutineExceptionHandlerCreator() = runTest {
-        expect(1)
-        var coroutineException: Throwable? = null
-        val handler = CoroutineExceptionHandler { _, ex ->
-            coroutineException = ex
-            expect(3)
-        }
-        val job = launch(coroutineContext + handler) {
-            throw TestException()
-        }
-        expect(2)
-        job.join()
-        finish(4)
-        assertTrue(coroutineException is TestException)
+    fun testMemoryRelease() {
+        val job = Job()
+        val n = 10_000_000 * stressTestMultiplier
+        var fireCount = 0
+        for (i in 0 until n) job.invokeOnCompletion { fireCount++ }.dispose()
     }
-
-    private class TestException: RuntimeException()
 }

@@ -16,10 +16,12 @@
 
 package kotlinx.coroutines.experimental
 
+import kotlinx.coroutines.experimental.selects.*
+import kotlinx.coroutines.experimental.sync.*
 import kotlin.coroutines.experimental.*
 import kotlin.test.*
 
-class CommonAtomicCancellationTest : TestBase() {
+class AtomicCancellationCommonTest : TestBase() {
     @Test
     fun testCancellableLaunch() = runTest {
         expect(1)
@@ -95,5 +97,43 @@ class CommonAtomicCancellationTest : TestBase() {
         expect(3) // continues to execute when job suspends
         yield() // to jobToJoin & canceller
         expect(6)
+    }
+
+    @Test
+    fun testLockAtomicCancel() = runTest {
+        expect(1)
+        val mutex = Mutex(true) // locked mutex
+        val job = launch(coroutineContext, start = CoroutineStart.UNDISPATCHED) {
+            expect(2)
+            mutex.lock() // suspends
+            expect(4) // should execute despite cancellation
+        }
+        expect(3)
+        mutex.unlock() // unlock mutex first
+        job.cancel() // cancel the job next
+        yield() // now yield
+        finish(5)
+    }
+
+    @Test
+    fun testSelectLockAtomicCancel() = runTest {
+        expect(1)
+        val mutex = Mutex(true) // locked mutex
+        val job = launch(coroutineContext, start = CoroutineStart.UNDISPATCHED) {
+            expect(2)
+            val result = select<String> { // suspends
+                mutex.onLock {
+                    expect(4)
+                    "OK"
+                }
+            }
+            assertEquals("OK", result)
+            expect(5) // should execute despite cancellation
+        }
+        expect(3)
+        mutex.unlock() // unlock mutex first
+        job.cancel() // cancel the job next
+        yield() // now yield
+        finish(6)
     }
 }

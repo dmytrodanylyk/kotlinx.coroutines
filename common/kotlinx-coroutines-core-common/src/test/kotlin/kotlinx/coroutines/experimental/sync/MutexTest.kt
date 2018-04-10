@@ -17,14 +17,12 @@
 package kotlinx.coroutines.experimental.sync
 
 import kotlinx.coroutines.experimental.*
-import org.hamcrest.core.*
-import org.junit.*
-import org.junit.Assert.*
+import kotlin.test.*
 import kotlin.coroutines.experimental.*
 
 class MutexTest : TestBase() {
     @Test
-    fun testSimple() = runBlocking<Unit> {
+    fun testSimple() = runTest {
         val mutex = Mutex()
         expect(1)
         launch(coroutineContext) {
@@ -64,33 +62,13 @@ class MutexTest : TestBase() {
     }
 
     @Test
-    fun withLockTest() = runBlocking {
+    fun withLockTest() = runTest {
         val mutex = Mutex()
         assertFalse(mutex.isLocked)
         mutex.withLock {
             assertTrue(mutex.isLocked)
         }
         assertFalse(mutex.isLocked)
-    }
-
-    @Test
-    fun testStress() = runBlocking<Unit> {
-        val n = 1000 * stressTestMultiplier
-        val k = 100
-        var shared = 0
-        val mutex = Mutex()
-        val jobs = List(n) {
-            launch(CommonPool) {
-                repeat(k) {
-                    mutex.lock()
-                    shared++
-                    mutex.unlock()
-                }
-            }
-        }
-        jobs.forEach { it.join() }
-        println("Shared value = $shared")
-        assertEquals(n * k, shared)
     }
 
     @Test
@@ -106,11 +84,11 @@ class MutexTest : TestBase() {
             }
         }
         mutex.unlock() // should not produce StackOverflowError
-        assertThat(done, IsEqual(waiters))
+        assertEquals(waiters, done)
     }
 
     @Test
-    fun holdLock() = runBlocking {
+    fun holdLock() = runTest {
         val mutex = Mutex()
         val firstOwner = Any()
         val secondOwner = Any()
@@ -121,7 +99,7 @@ class MutexTest : TestBase() {
 
         // owner firstOwner
         mutex.lock(firstOwner)
-        val secondLockJob = launch(CommonPool) {
+        val secondLockJob = launch {
             mutex.lock(secondOwner)
         }
 

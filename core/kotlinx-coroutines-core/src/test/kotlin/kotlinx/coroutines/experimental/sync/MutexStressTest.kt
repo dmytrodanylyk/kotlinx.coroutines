@@ -14,32 +14,29 @@
  * limitations under the License.
  */
 
-package kotlinx.coroutines.experimental
+package kotlinx.coroutines.experimental.sync
 
+import kotlinx.coroutines.experimental.*
 import kotlin.test.*
 
-class WithContextTest : TestBase() {
+class MutexStressTest : TestBase() {
     @Test
-    fun testCommonPoolNoSuspend() = runTest {
-        expect(1)
-        val result = withContext(CommonPool) {
-            expect(2)
-            "OK"
+    fun testStress() = runTest {
+        val n = 1000 * stressTestMultiplier
+        val k = 100
+        var shared = 0
+        val mutex = Mutex()
+        val jobs = List(n) {
+            launch(CommonPool) {
+                repeat(k) {
+                    mutex.lock()
+                    shared++
+                    mutex.unlock()
+                }
+            }
         }
-        assertEquals("OK", result)
-        finish(3)
-    }
-
-    @Test
-    fun testCommonPoolWithSuspend() = runTest {
-        expect(1)
-        val result = withContext(CommonPool) {
-            expect(2)
-            delay(100)
-            expect(3)
-            "OK"
-        }
-        assertEquals("OK", result)
-        finish(4)
+        jobs.forEach { it.join() }
+        println("Shared value = $shared")
+        assertEquals(n * k, shared)
     }
 }
