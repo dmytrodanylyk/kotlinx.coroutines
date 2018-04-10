@@ -18,15 +18,10 @@ package kotlinx.coroutines.experimental
 
 import kotlinx.coroutines.experimental.internal.*
 
-internal actual abstract class JobNode<out J : Job> actual constructor(
-    @JvmField actual val job: J
-) : LockFreeLinkedListNode(), DisposableHandle, CompletionHandler, Incomplete {
+internal actual abstract class CompletionHandlerNode actual constructor() : LockFreeLinkedListNode(), CompletionHandler {
     actual inline val asHandler: CompletionHandler get() = this
-    actual override val isActive: Boolean get() = true
-    actual override val list: NodeList? get() = null
-    actual override fun dispose() = (job as JobSupport).removeNode(this)
-    actual abstract override fun invoke(reason: Throwable?)
+    actual abstract override fun invoke(cause: Throwable?)
 }
 
-internal actual inline val CompletionHandler.asJobNode: JobNode<*>?
-    get() = this as? JobNode<*>
+@Suppress("NOTHING_TO_INLINE")
+internal actual inline fun CompletionHandler.invokeIt(cause: Throwable?) = invoke(cause)
