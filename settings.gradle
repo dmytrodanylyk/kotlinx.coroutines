@@ -22,6 +22,7 @@ module('integration/kotlinx-coroutines-guava')
 module('integration/kotlinx-coroutines-jdk8')
 module('integration/kotlinx-coroutines-nio')
 module('integration/kotlinx-coroutines-quasar')
+module('integration/kotlinx-coroutines-android-livedata')
 
 module('reactive/kotlinx-coroutines-reactive')
 module('reactive/kotlinx-coroutines-reactor')
